@@ -28,6 +28,9 @@ platform :ios do
   lane :build_xdrip4ios do
     setup_ci if ENV['CI']
     
+    # Voeg deze regel toe om de read-only modus uit te schakelen
+    ENV["MATCH_READONLY"] = false.to_s
+    
     update_project_team(
       path: "#{GITHUB_WORKSPACE}/xdrip.xcodeproj",
       teamid: "#{TEAMID}"
@@ -51,11 +54,10 @@ platform :ios do
       build_number: current_build_number
     )
     
-    # Dit is de aangepaste stap: 'force: true' dwingt Fastlane om de
-    # provisioning profiles opnieuw te genereren en te synchroniseren
+    # Deze stap vernieuwt de provisioning profiles, nu de read-only modus uit is
     match(
       type: "appstore",
-      force: true,  # <-- Deze parameter is toegevoegd
+      force: true,
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
         "com.#{TEAMID}.xdripswift",
