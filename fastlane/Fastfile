@@ -3,11 +3,11 @@
 #
 # For a list of all available actions, check out
 #
-#     https://docs.fastlane.tools/actions
+#       https://docs.fastlane.tools/actions
 #
 # For a list of all available plugins, check out
 #
-#     https://docs.fastlane.tools/plugins/available-plugins
+#       https://docs.fastlane.tools/plugins/available-plugins
 #
 
 default_platform(:ios)
@@ -51,8 +51,11 @@ platform :ios do
       build_number: current_build_number
     )
     
+    # Dit is de aangepaste stap: 'force: true' dwingt Fastlane om de
+    # provisioning profiles opnieuw te genereren en te synchroniseren
     match(
       type: "appstore",
+      force: true,  # <-- Deze parameter is toegevoegd
       git_basic_authorization: Base64.strict_encode64("#{GITHUB_REPOSITORY_OWNER}:#{GH_PAT}"),
       app_identifier: [
         "com.#{TEAMID}.xdripswift",
@@ -158,9 +161,9 @@ platform :ios do
 
     def configure_bundle_id(name, identifier, capabilities)
       bundle_id = Spaceship::ConnectAPI::BundleId.find(identifier) || Spaceship::ConnectAPI::BundleId.create(
-        name:       name,
+        name:      name,
         identifier: identifier,
-        platform:   "IOS"
+        platform:  "IOS"
       )
       existing = bundle_id.get_capabilities.map(&:capability_type)
       capabilities.reject { |c| existing.include?(c) }.each do |cap|
